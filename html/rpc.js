@@ -4,12 +4,12 @@
  * @returns {Promise<string>} - 命令执行的结果
  */
 async function callRpcRunCommand(command) {
-    // 构造RPC请求体，符合JSON-RPC规范
+    // 构造RPC请求体，符合JSON-RPC 2.0规范
     const rpcRequest = {
         jsonrpc: "2.0",
         id: Date.now(),
         method: "Call.RpcRunCommand",
-        params: [command, ""] // 添加第二个参数作为结果占位符
+        params: [command]  // 只传递一个参数，服务器会自动处理
     };
 
     console.log('发送RPC请求:', JSON.stringify(rpcRequest));

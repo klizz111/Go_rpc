@@ -80,7 +80,7 @@
                     jsonrpc: "2.0",
                     id: Date.now(),
                     method: "Call.RpcRunCommand",
-                    params: [commandInput.value.trim(), ""]
+                    params: [commandInput.value.trim()]
                 };
                 
                 // 发送请求
@@ -94,7 +94,6 @@
                 
                 // 显示原始响应
                 const responseText = await response.text();
-                resultEl.textContent = `原始响应:\n${responseText}`;
                 
                 if (!response.ok) {
                     throw new Error(`HTTP error: ${response.status}`);
@@ -102,12 +101,18 @@
                 
                 try {
                     const result = JSON.parse(responseText);
+                    resultEl.textContent = `原始响应:\n${JSON.stringify(result, null, 2)}`;
+                    
                     if (result.error) {
                         throw new Error(`RPC错误: ${JSON.stringify(result.error)}`);
                     }
-                    resultEl.textContent = result.result;
+                    
+                    if (result.result !== undefined) {
+                        resultEl.textContent = result.result;
+                    }
                 } catch (parseError) {
                     console.error('解析响应失败:', parseError);
+                    resultEl.textContent = `解析失败: ${responseText}`;
                 }
             } catch (error) {
                 resultEl.textContent = `错误: ${error.message}`;
