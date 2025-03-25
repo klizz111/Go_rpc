@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>RPC测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .test-section {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            padding: 5px 10px;
+            margin: 5px 0;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+            overflow: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>RPC连接测试</h1>
+        
+        <div class="test-section">
+            <h2>基本连接测试</h2>
+            <button onclick="testConnection()">测试服务器连接</button>
+            <pre id="connectionResult">点击按钮开始测试...</pre>
+        </div>
+        
+        <div class="test-section">
+            <h2>命令执行测试</h2>
+            <input type="text" id="commandInput" placeholder="输入命令，例如 dir 或 ls" style="width: 300px;">
+            <button onclick="executeCommand()">执行命令</button>
+            <pre id="commandResult">点击按钮执行命令...</pre>
+        </div>
+    </div>
+    
+    <script>
+        async function testConnection() {
+            const resultEl = document.getElementById('connectionResult');
+            resultEl.textContent = '测试中...';
+            
+            try {
+                const response = await fetch('http://localhost:1234/');
+                const text = await response.text();
+                resultEl.textContent = `连接成功！服务器返回: ${text}`;
+            } catch (error) {
+                resultEl.textContent = `连接失败: ${error.message}`;
+            }
+        }
+        
+        async function executeCommand() {
+            const commandInput = document.getElementById('commandInput');
+            const resultEl = document.getElementById('commandResult');
+            
+            if (!commandInput || !commandInput.value.trim()) {
+                resultEl.textContent = '请输入要执行的命令';
+                return;
+            }
+            
+            resultEl.textContent = '执行中...';
+            
+            try {
+                // 构造RPC请求
+                const rpcRequest = {
+                    jsonrpc: "2.0",
+                    id: Date.now(),
+                    method: "Call.RpcRunCommand",
+                    params: [commandInput.value.trim(), ""]
+                };
+                
+                // 发送请求
+                const response = await fetch('http://localhost:1234/rpc', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(rpcRequest)
+                });
+                
+                // 显示原始响应
+                const responseText = await response.text();
+                resultEl.textContent = `原始响应:\n${responseText}`;
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error: ${response.status}`);
+                }
+                
+                try {
+                    const result = JSON.parse(responseText);
+                    if (result.error) {
+                        throw new Error(`RPC错误: ${JSON.stringify(result.error)}`);
+                    }
+                    resultEl.textContent = result.result;
+                } catch (parseError) {
+                    console.error('解析响应失败:', parseError);
+                }
+            } catch (error) {
+                resultEl.textContent = `错误: ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html>
