@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"net/rpc"
@@ -106,7 +106,7 @@ func handleJSONRPC(w http.ResponseWriter, r *http.Request, cal *Call) {
 	}
 
 	// 读取请求体
-	body, err := ioutil.ReadAll(r.Body)
+	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		log.Printf("读取请求体失败: %v", err)
 		http.Error(w, "读取请求失败", http.StatusBadRequest)

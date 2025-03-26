@@ -1,2 +1,4 @@
+target = "http://localhost:1234"
+
 [Command]
 ls = "ls"
