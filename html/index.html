@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RPC命令执行</title>
+    <title style="color: rgb(157, 160, 159);">RPC命令执行</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -15,6 +15,7 @@
             min-height: 100vh;
             margin: 0;
             padding: 20px;
+            background-color: rgb(31, 30, 30);
         }
 
         .container {
@@ -48,6 +49,15 @@
 
         h1 {
             text-align: center;
+        }
+
+        input {
+            background-color: rgb(62, 56, 56);
+        }
+
+        button {
+            background-color: rgb(62, 56, 56);
+            color: rgb(157, 160, 159);
         }
     </style>
     <script>
@@ -90,9 +100,9 @@
     <div class="container">
         <button onclick="executeCode()">执行</button>
     </div>
-    <div class="container">
+    <div class="container" style="color: rgb(157, 160, 159);">
         <h3>执行结果：</h3>
-        <pre id="resultOutput">结果将显示在这里...</pre>
+        <pre id="resultOutput" style="color: rgb(117, 115, 113); background-color: rgba(81, 81, 72, 0.565);">结果将显示在这里...</pre>
     </div>
 
     <script src="rpc.js"></script>
