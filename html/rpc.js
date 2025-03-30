@@ -7,6 +7,8 @@ async function callRpcRunCommand(command) {
     // 构造RPC请求体，符合JSON-RPC 2.0规范
     const authcode = document.getElementById('authcode').value;
     localStorage.setItem('authcode', authcode);
+    const dest = document.getElementById('dest').value;
+    localStorage.setItem('dest', dest);
     const rpcRequest = {
         jsonrpc: "2.0",
         id: Date.now(),
@@ -16,10 +18,10 @@ async function callRpcRunCommand(command) {
     };
 
     console.log('发送RPC请求:', JSON.stringify(rpcRequest));
-    
+    url = 'http://' + dest + '/rpc';
     try {
         // 发送POST请求到RPC服务器
-        const response = await fetch('http://localhost:8080/rpc', {
+        const response = await fetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -83,6 +85,10 @@ function executeCommand() {
 async function executeCode() {
     const resultOutput = document.getElementById('resultOutput');
     const codeInput = document.getElementById('shortcode').value;
+    const dest = document.getElementById('dest').value;
+    localStorage.setItem('dest', dest);
+    url = 'http://' + dest + '/code';
+
     if (codeInput == "") {
         alert('请输入要执行的代码');
         return;
@@ -92,7 +98,7 @@ async function executeCode() {
         shortcode: codeInput
     }
     try {
-        const response = await fetch('http://localhost:8080/code', {
+        const response = await fetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
