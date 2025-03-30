@@ -5,18 +5,21 @@
  */
 async function callRpcRunCommand(command) {
     // 构造RPC请求体，符合JSON-RPC 2.0规范
+    const authcode = document.getElementById('authcode').value;
+    localStorage.setItem('authcode', authcode);
     const rpcRequest = {
         jsonrpc: "2.0",
         id: Date.now(),
         method: "Call.RpcRunCommand",
-        params: [command]  // 只传递一个参数，服务器会自动处理
+        params: [command], // 只传递一个参数，服务器会自动处理
+        authcode: authcode
     };
 
     console.log('发送RPC请求:', JSON.stringify(rpcRequest));
     
     try {
         // 发送POST请求到RPC服务器
-        const response = await fetch('http://localhost:1234/rpc', {
+        const response = await fetch('http://localhost:8080/rpc', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -58,6 +61,7 @@ async function callRpcRunCommand(command) {
  */
 function executeCommand() {
     const commandInput = document.getElementById('commandInput');
+    localStorage.setItem('command', commandInput.value);
     const resultOutput = document.getElementById('resultOutput');
     
     if (!commandInput || !commandInput.value.trim()) {
@@ -74,4 +78,48 @@ function executeCommand() {
         .catch(error => {
             resultOutput.textContent = `错误: ${error.message}`;
         });
+}
+
+async function executeCode() {
+    const resultOutput = document.getElementById('resultOutput');
+    const codeInput = document.getElementById('shortcode').value;
+    if (codeInput == "") {
+        alert('请输入要执行的代码');
+        return;
+    }
+    localStorage.setItem('code', codeInput.value);
+    const codeRequest = {
+        shortcode: codeInput
+    }
+    try {
+        const response = await fetch('http://localhost:8080/code', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(codeRequest)
+        });
+        const responseText = await response.text();
+        console.log('原始响应:', responseText);
+        if (!response.ok) {
+            throw new Error(`HTTP error: ${response.status} - ${response.statusText}`);
+        }
+        try {
+            const result = JSON.parse(responseText);
+            if (result.error) {
+                throw new Error(`RPC error: ${JSON.stringify(result.error)}`);
+            }
+            resultOutput.textContent = result.result;
+            return result.result;
+        } catch (parseError) {
+            console.error('解析响应失败:', parseError);
+            resultOutput.textContent = responseText;
+            return
+        } 
+    }
+    catch (error) {
+        console.error('RPC调用失败:', error);
+        resultOutput.textContent = `错误: ${error.message}`;
+    }
+
 }

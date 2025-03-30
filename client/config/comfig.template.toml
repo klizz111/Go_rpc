@@ -1,0 +1,12 @@
+Authcode = "0000"
+
+[Server]
+port = 8080
+host = "localhost"
+
+[Rpc]
+endpoint = "localhost:1234"
+
+[Code]
+listfile = "ls"
+

@@ -1,0 +1,4 @@
+/test
+**/config.toml
+**/go.sum
+**/.env
